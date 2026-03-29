@@ -1,0 +1,470 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-1: #071224;
+    --bg-2: #0b1830;
+    --panel: rgba(12, 22, 40, 0.82);
+    --border: rgba(255, 255, 255, 0.08);
+    --text: #f8fafc;
+    --muted: #b8c4d9;
+    --accent: #4cc2ff;
+    --accent-2: #7dd3fc;
+    --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+body {
+    font-family: Arial, sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at top left, rgba(76, 194, 255, 0.16), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.14), transparent 25%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+}
+
+/* ── Модальне вікно ── */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(4, 10, 22, 0.85);
+    backdrop-filter: blur(8px);
+    padding: 20px;
+}
+
+.modal-overlay.hidden {
+    display: none;
+}
+
+.modal-box {
+    width: min(100%, 520px);
+    background: rgba(10, 18, 34, 0.97);
+    border: 1px solid var(--border);
+    border-radius: 26px;
+    padding: 36px 28px 28px;
+    box-shadow: var(--shadow);
+}
+
+.modal-badge {
+    display: inline-block;
+    margin-bottom: 16px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(76, 194, 255, 0.12);
+    color: var(--accent-2);
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.modal-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.modal-subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    margin-bottom: 24px;
+}
+
+/* ── Пошук ── */
+.search-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.city-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.city-input::placeholder {
+    color: var(--muted);
+    opacity: 0.6;
+}
+
+.city-input:focus {
+    border-color: rgba(76, 194, 255, 0.4);
+}
+
+.search-btn {
+    background: rgba(76, 194, 255, 0.16);
+    border: 1px solid rgba(76, 194, 255, 0.22);
+    border-radius: 14px;
+    padding: 12px 20px;
+    color: var(--accent);
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s ease;
+    white-space: nowrap;
+}
+
+.search-btn:hover {
+    background: rgba(76, 194, 255, 0.26);
+}
+
+/* ── Статус ── */
+.search-status {
+    font-size: 14px;
+    color: var(--muted);
+    min-height: 20px;
+    margin-bottom: 4px;
+    padding: 0 4px;
+}
+
+/* ── Результати ── */
+.city-results {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 8px;
+}
+
+.city-results::-webkit-scrollbar {
+    width: 4px;
+}
+
+.city-results::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.city-results::-webkit-scrollbar-thumb {
+    background: rgba(76, 194, 255, 0.2);
+    border-radius: 4px;
+}
+
+.city-result-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    color: var(--text);
+    cursor: pointer;
+    transition: 0.2s ease;
+    text-align: left;
+}
+
+.city-result-btn:hover {
+    background: rgba(76, 194, 255, 0.1);
+    border-color: rgba(76, 194, 255, 0.2);
+    transform: translateX(3px);
+}
+
+.result-name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.result-region {
+    font-size: 13px;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+/* ── Основна сторінка ── */
+.page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 28px;
+}
+
+.weather-card {
+    width: min(100%, 760px);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: 42px 28px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(12px);
+}
+
+.weather-badge {
+    display: inline-block;
+    margin-bottom: 18px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(76, 194, 255, 0.12);
+    color: var(--accent-2);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.weather-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.city-name {
+    font-size: 42px;
+    font-weight: bold;
+    line-height: 1.1;
+}
+
+.city-country {
+    font-size: 16px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+.change-city-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 16px;
+    color: var(--muted);
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    white-space: nowrap;
+}
+
+.change-city-btn:hover {
+    background: rgba(76, 194, 255, 0.1);
+    border-color: rgba(76, 194, 255, 0.2);
+    color: var(--text);
+}
+
+.weather-text {
+    color: var(--muted);
+    font-size: 18px;
+}
+
+/* ── Кнопка назад ── */
+.menu-button {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    z-index: 1200;
+    border: none;
+    background: rgba(10, 18, 33, 0.78);
+    color: white;
+    border-radius: 16px;
+    padding: 12px 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(10px);
+    transition: 0.2s ease;
+}
+
+.menu-button:hover {
+    transform: translateY(-1px);
+    background: rgba(16, 27, 49, 0.95);
+}
+
+.menu-button-icon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.menu-button-text {
+    font-size: 17px;
+    font-weight: bold;
+}
+
+/* ── Адаптив ── */
+@media (max-width: 600px) {
+    .modal-box {
+        padding: 28px 18px 22px;
+        border-radius: 22px;
+    }
+
+    .modal-title {
+        font-size: 24px;
+    }
+
+    .search-row {
+        flex-direction: column;
+    }
+
+    .city-name {
+        font-size: 32px;
+    }
+
+    .result-region {
+        white-space: normal;
+    }
+}
+
+/* ── Поточна погода ── */
+.weather-loading {
+    text-align: center;
+    color: var(--muted);
+    font-size: 17px;
+    padding: 30px 0;
+}
+
+.current-weather {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+.current-icon {
+    font-size: 72px;
+    line-height: 1;
+}
+
+.current-temp {
+    font-size: 56px;
+    font-weight: bold;
+    line-height: 1;
+    color: var(--text);
+}
+
+.current-desc {
+    font-size: 20px;
+    color: var(--accent-2);
+    margin-top: 4px;
+}
+
+.current-feels {
+    font-size: 15px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+/* ── Деталі ── */
+.current-details {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.detail-box {
+    flex: 1;
+    min-width: 120px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+}
+
+.detail-icon {
+    font-size: 22px;
+    margin-bottom: 6px;
+}
+
+.detail-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.detail-value {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--text);
+}
+
+/* ── Прогноз 7 днів ── */
+.forecast-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.forecast-day {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 6px;
+    text-align: center;
+    transition: 0.2s ease;
+}
+
+.forecast-day:hover {
+    background: rgba(76, 194, 255, 0.08);
+    border-color: rgba(76, 194, 255, 0.18);
+}
+
+.forecast-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.forecast-icon {
+    font-size: 22px;
+    margin-bottom: 8px;
+}
+
+.forecast-temps {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    font-size: 13px;
+}
+
+.temp-max {
+    color: var(--text);
+    font-weight: bold;
+}
+
+.temp-min {
+    color: var(--muted);
+}
+
+.forecast-rain {
+    font-size: 11px;
+    color: var(--accent-2);
+    margin-top: 4px;
+}
+
+@media (max-width: 700px) {
+    .current-icon {
+        font-size: 52px;
+    }
+
+    .current-temp {
+        font-size: 42px;
+    }
+
+    .forecast-row {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 420px) {
+    .forecast-row {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

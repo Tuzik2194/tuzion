@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${site_title}</title>
+    <link rel="stylesheet" href="/main_page/style.css">
+</head>
+<body>
+
+    <div id="menu-overlay" class="menu-overlay" onclick="closeMenu()"></div>
+
+    <button id="menu-open" class="menu-button" onclick="openMenu()" type="button">
+        <span class="menu-button-icon">☰</span>
+        <span class="menu-button-text">${menu_button}</span>
+    </button>
+
+    <aside id="side-menu" class="side-menu">
+        <div class="side-top">
+            <button class="back-button" onclick="closeMenu()" type="button">
+                <span>←</span>
+                <span>${menu_back}</span>
+            </button>
+
+            <div class="menu-title-wrap">
+                <div class="menu-mini-label">Tuzion</div>
+                <h2>${menu_title}</h2>
+            </div>
+        </div>
+
+        <nav class="menu-links">
+            <a href="/games" class="menu-link">
+                <span class="menu-link-icon">🎮</span>
+                <span>${menu_games}</span>
+            </a>
+            <a href="/weather" class="menu-link">
+                <span class="menu-link-icon">🌤️</span>
+                <span>${menu_weather}</span>
+            </a>
+        </nav>
+    </aside>
+
+    <div class="clock-widget">
+        <div class="clock-widget-label">${clock_label}</div>
+        <div id="kyiv-clock" class="clock-widget-time">--:--:--</div>
+        <div id="kyiv-date" class="clock-widget-date">--.--.----</div>
+    </div>
+
+    <main class="page">
+        <section class="hero-section">
+
+            <div class="site-name">${site_name}</div>
+            <p class="site-tagline">${site_tagline}</p>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-card-icon">${block_1_icon}</div>
+                    <div class="info-card-title">${block_1_title}</div>
+                    <div class="info-card-text">${block_1_text}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-icon">${block_2_icon}</div>
+                    <div class="info-card-title">${block_2_title}</div>
+                    <div class="info-card-text">${block_2_text}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-icon">${block_3_icon}</div>
+                    <div class="info-card-title">${block_3_title}</div>
+                    <div class="info-card-text">${block_3_text}</div>
+                </div>
+            </div>
+
+            <div class="footer-text">${footer}</div>
+        </section>
+    </main>
+
+    <script src="/script.js"></script>
+</body>
+</html>

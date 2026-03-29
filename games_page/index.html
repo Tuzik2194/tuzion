@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${games_title}</title>
+    <link rel="stylesheet" href="/games_page/style.css">
+</head>
+<body>
+
+    <button class="menu-button" onclick="window.location.href='/'" type="button">
+        <span class="menu-button-icon">←</span>
+        <span class="menu-button-text">${menu_back}</span>
+    </button>
+
+    <main class="page">
+        <section class="games-card">
+            <div class="games-badge">Tuzion</div>
+            <h1>${games_title}</h1>
+            <p class="games-text">${games_description}</p>
+
+            <div class="games-grid">
+                <button class="game-btn" type="button" onclick="window.location.href='/games/minesweeper'">
+                    ${game_1}
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <script src="/script.js"></script>
+</body>
+</html>

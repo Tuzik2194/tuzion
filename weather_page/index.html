@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${weather_title}</title>
+    <link rel="stylesheet" href="/weather_page/style.css">
+</head>
+<body>
+
+    <button class="menu-button" onclick="window.location.href='/'" type="button">
+        <span class="menu-button-icon">←</span>
+        <span class="menu-button-text">${menu_back}</span>
+    </button>
+
+    <!-- Модальне вікно вибору міста -->
+    <div id="city-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-badge">Tuzion</div>
+            <h2 class="modal-title">${weather_modal_title}</h2>
+            <p class="modal-subtitle">${weather_modal_subtitle}</p>
+
+            <div class="search-row">
+                <input
+                    id="city-input"
+                    class="city-input"
+                    type="text"
+                    placeholder="${weather_input_placeholder}"
+                    autocomplete="off"
+                />
+                <button class="search-btn" onclick="searchCity()" type="button">${weather_search_btn}</button>
+            </div>
+
+            <div id="search-status" class="search-status"></div>
+            <div id="city-results" class="city-results"></div>
+        </div>
+    </div>
+
+    <!-- Основна сторінка погоди -->
+    <main class="page" id="weather-page" style="display:none;">
+        <section class="weather-card">
+            <div class="weather-badge">Tuzion</div>
+
+            <div class="weather-header">
+                <div>
+                    <h1 id="city-name" class="city-name"></h1>
+                    <div id="city-country" class="city-country"></div>
+                </div>
+                <button class="change-city-btn" onclick="openModal()" type="button">${weather_change_city}</button>
+            </div>
+
+            <div id="weather-content" class="weather-content">
+                <div class="weather-loading">${weather_loading}</div>
+            </div>
+        </section>
+    </main>
+
+    <script src="/script.js"></script>
+    <script>
+        let selectedLat = null;
+        let selectedLon = null;
+
+        // ── Відкрити / закрити модалку ──────────────────────────────
+        function openModal() {
+            document.getElementById("city-modal").classList.remove("hidden");
+            document.getElementById("city-input").value = "";
+            document.getElementById("city-results").innerHTML = "";
+            document.getElementById("search-status").textContent = "";
+            setTimeout(() => document.getElementById("city-input").focus(), 50);
+        }
+
+        function closeModal() {
+            document.getElementById("city-modal").classList.add("hidden");
+        }
+
+        // ── Пошук міста через Open-Meteo Geocoding (без ключа) ──────
+        async function searchCity() {
+            const query = document.getElementById("city-input").value.trim();
+            if (!query) return;
+
+            const statusEl  = document.getElementById("search-status");
+            const resultsEl = document.getElementById("city-results");
+
+            statusEl.textContent = "${weather_searching}";
+            resultsEl.innerHTML  = "";
+
+            try {
+                const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=10&language=uk&format=json`;
+                const res  = await fetch(url);
+                const data = await res.json();
+
+                statusEl.textContent = "";
+
+                if (!data.results || !data.results.length) {
+                    statusEl.textContent = "${weather_not_found}";
+                    return;
+                }
+
+                data.results.forEach(city => {
+                    const btn = document.createElement("button");
+                    btn.type      = "button";
+                    btn.className = "city-result-btn";
+
+                    const region  = city.admin1 ? `, ${city.admin1}` : "";
+                    const country = city.country || "";
+
+                    btn.innerHTML = `
+                        <span class="result-name">${city.name}</span>
+                        <span class="result-region">${region}, ${country}</span>
+                    `;
+
+                    btn.addEventListener("click", () => selectCity(city));
+                    resultsEl.appendChild(btn);
+                });
+
+            } catch (e) {
+                statusEl.textContent = "${weather_error}";
+            }
+        }
+
+        // ── Вибір міста ─────────────────────────────────────────────
+        function selectCity(city) {
+            selectedLat = city.latitude;
+            selectedLon = city.longitude;
+
+            const region  = city.admin1 ? `, ${city.admin1}` : "";
+            document.getElementById("city-name").textContent    = city.name;
+            document.getElementById("city-country").textContent = region + ", " + (city.country || "");
+
+            closeModal();
+            document.getElementById("weather-page").style.display = "";
+            loadWeather();
+        }
+
+        // ── Завантажити погоду через Open-Meteo ─────────────────────
+        async function loadWeather() {
+            const contentEl = document.getElementById("weather-content");
+            contentEl.innerHTML = `<div class="weather-loading">${weather_loading}</div>`;
+
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${selectedLat}&longitude=${selectedLon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weathercode&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum&timezone=auto&forecast_days=7`;
+                const res  = await fetch(url);
+                const data = await res.json();
+                renderWeather(data);
+            } catch (e) {
+                contentEl.innerHTML = `<div class="weather-loading">${weather_error}</div>`;
+            }
+        }
+
+        // ── Іконка за кодом погоди WMO ───────────────────────────────
+        function weatherIcon(code) {
+            if (code === 0)              return "☀️";
+            if (code <= 2)               return "⛅";
+            if (code === 3)              return "☁️";
+            if (code <= 49)              return "🌫️";
+            if (code <= 59)              return "🌦️";
+            if (code <= 69)              return "❄️";
+            if (code <= 79)              return "🌨️";
+            if (code <= 82)              return "🌧️";
+            if (code <= 86)              return "🌨️";
+            if (code <= 99)              return "⛈️";
+            return "🌡️";
+        }
+
+        function weatherDesc(code) {
+            if (code === 0)  return "Ясно";
+            if (code === 1)  return "Переважно ясно";
+            if (code === 2)  return "Мінлива хмарність";
+            if (code === 3)  return "Хмарно";
+            if (code <= 49)  return "Туман";
+            if (code <= 59)  return "Мряка";
+            if (code <= 69)  return "Дощ";
+            if (code <= 79)  return "Снігопад";
+            if (code <= 82)  return "Злива";
+            if (code <= 86)  return "Сніг";
+            if (code <= 99)  return "Гроза";
+            return "Невідомо";
+        }
+
+        // ── Рендер погоди ────────────────────────────────────────────
+        function renderWeather(data) {
+            const c   = data.current;
+            const d   = data.daily;
+            const now = new Date();
+
+            const days = ["Нд", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+
+            let forecastHTML = "";
+            for (let i = 0; i < 7; i++) {
+                const date    = new Date(d.time[i]);
+                const dayName = i === 0 ? "Сьогодні" : i === 1 ? "Завтра" : days[date.getDay()];
+                forecastHTML += `
+                    <div class="forecast-day">
+                        <div class="forecast-label">${dayName}</div>
+                        <div class="forecast-icon">${weatherIcon(d.weathercode[i])}</div>
+                        <div class="forecast-temps">
+                            <span class="temp-max">${Math.round(d.temperature_2m_max[i])}°</span>
+                            <span class="temp-min">${Math.round(d.temperature_2m_min[i])}°</span>
+                        </div>
+                        ${d.precipitation_sum[i] > 0 ? `<div class="forecast-rain">💧 ${d.precipitation_sum[i]} мм</div>` : ""}
+                    </div>
+                `;
+            }
+
+            document.getElementById("weather-content").innerHTML = `
+                <div class="current-weather">
+                    <div class="current-icon">${weatherIcon(c.weathercode)}</div>
+                    <div class="current-info">
+                        <div class="current-temp">${Math.round(c.temperature_2m)}°C</div>
+                        <div class="current-desc">${weatherDesc(c.weathercode)}</div>
+                        <div class="current-feels">Відчувається як ${Math.round(c.apparent_temperature)}°C</div>
+                    </div>
+                </div>
+
+                <div class="current-details">
+                    <div class="detail-box">
+                        <div class="detail-icon">💧</div>
+                        <div class="detail-label">Вологість</div>
+                        <div class="detail-value">${c.relative_humidity_2m}%</div>
+                    </div>
+                    <div class="detail-box">
+                        <div class="detail-icon">💨</div>
+                        <div class="detail-label">Вітер</div>
+                        <div class="detail-value">${Math.round(c.wind_speed_10m)} км/г</div>
+                    </div>
+                </div>
+
+                <div class="forecast-row">
+                    ${forecastHTML}
+                </div>
+            `;
+        }
+
+        // ── Enter для пошуку ────────────────────────────────────────
+        document.getElementById("city-input").addEventListener("keydown", e => {
+            if (e.key === "Enter") searchCity();
+        });
+
+        // ── Відкриваємо модалку одразу при завантаженні ─────────────
+        openModal();
+    </script>
+</body>
+</html>

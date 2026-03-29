@@ -1,0 +1,53 @@
+{
+  "site_title": "Tuzion",
+  "site_name": "Tuzion",
+  "site_tagline": "Що тут є і навіщо?",
+
+  "block_1_icon": "🎮",
+  "block_1_title": "Ігри та розваги",
+  "block_1_text": "Простенькі браузерні ігри, просто щоб відпочити від роботи, або вбити час!",
+
+  "block_2_icon": "🛠️",
+  "block_2_title": "Розробка",
+  "block_2_text": "В майбутньому можна буде програмувати прямо в браузері, та ділитися своїми роботами між усіма!",
+
+  "block_3_icon": "✨",
+  "block_3_title": "Інші функції",
+  "block_3_text": "Сайт постійно розробляється та постійно додається щось нове!",
+
+  "clock_label": "Час за Києвом",
+  "footer": "В розробці, можливі баги!",
+
+  "menu_title": "Меню",
+  "menu_button": "Меню",
+  "menu_back": "Назад",
+  "menu_games": "Ігри",
+  "menu_weather": "Погода",
+
+  "weather_title": "Погода",
+  "weather_description": "В розробці...",
+  "weather_modal_title": "Оберіть місто",
+  "weather_modal_subtitle": "Введіть назву міста для пошуку",
+  "weather_input_placeholder": "Наприклад: Київ",
+  "weather_search_btn": "Знайти",
+  "weather_searching": "Пошук...",
+  "weather_not_found": "Міст не знайдено. Спробуй іншу назву.",
+  "weather_error": "Помилка з'єднання. Перевір інтернет.",
+  "weather_change_city": "🔍 Змінити місто",
+  "weather_loading": "Завантаження погоди...",
+
+  "games_title": "Ігри",
+  "games_description": "Обери гру нижче 😈",
+  "game_1": "💣 Сапер",
+
+  "minesweeper_title": "💣 Сапер",
+  "minesweeper_description": "Для старту натисни на клітинку, буть обережним, десь тут міни!",
+  "minesweeper_mines_label": "Міни",
+  "minesweeper_status_label": "Статус",
+  "minesweeper_restart": "🔄 Нова гра",
+  "minesweeper_status_ready": "Готово",
+  "minesweeper_status_playing": "Гра йде",
+  "minesweeper_status_win": "Перемога 🎉",
+  "minesweeper_status_lose": "Програш 💥",
+  "minesweeper_hint": "Ліва кнопка миші — відкрити клітинку. Права — поставити прапорець."
+}

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${minesweeper_title}</title>
+    <link rel="stylesheet" href="/games/minesweeper/style.css">
+</head>
+<body>
+
+    <button class="menu-button" onclick="window.location.href='/games'" type="button">
+        <span class="menu-button-icon">←</span>
+        <span class="menu-button-text">${menu_back}</span>
+    </button>
+
+    <main class="page">
+        <section class="game-card">
+            <div class="game-badge">Tuzion</div>
+            <h1>${minesweeper_title}</h1>
+            <p class="game-text">${minesweeper_description}</p>
+
+            <div class="difficulty-row">
+                <button class="diff-btn active" data-diff="easy" type="button">Легко<span>8×8 · 10💣</span></button>
+                <button class="diff-btn" data-diff="medium" type="button">Середньо<span>12×12 · 25💣</span></button>
+                <button class="diff-btn" data-diff="hard" type="button">Важко<span>16×16 · 50💣</span></button>
+            </div>
+
+            <div class="top-panel">
+                <div class="info-box">
+                    <span class="info-label">${minesweeper_mines_label}</span>
+                    <span id="mines-left">10</span>
+                </div>
+
+                <button id="restart-btn" class="restart-btn" type="button">
+                    ${minesweeper_restart}
+                </button>
+
+                <div class="info-box">
+                    <span class="info-label">⏱ Час</span>
+                    <span id="timer-display">0</span>
+                </div>
+            </div>
+
+            <div style="position:relative;">
+                <div id="board" class="board"></div>
+                <div id="result-overlay" class="result-overlay hidden">
+                    <div class="result-box">
+                        <div id="result-emoji" class="result-emoji"></div>
+                        <div id="result-text" class="result-text"></div>
+                        <div id="result-time" class="result-time"></div>
+                        <button class="restart-btn" onclick="startGame()" type="button">${minesweeper_restart}</button>
+                    </div>
+                </div>
+            </div>
+
+            <p class="hint-text">${minesweeper_hint}</p>
+        </section>
+    </main>
+
+    <!-- ЗВУКИ -->
+    <audio id="click-sound" src="/sounds/minesweeper/click.mp3" preload="auto"></audio>
+    <audio id="explosion-sound" src="/sounds/minesweeper/explosion.mp3" preload="auto"></audio>
+
+    <script>
+        // ── Складність ──────────────────────────────────────────────
+        const DIFFICULTIES = {
+            easy:   { size: 8,  mines: 10 },
+            medium: { size: 12, mines: 25 },
+            hard:   { size: 16, mines: 50 }
+        };
+        let currentDiff = "easy";
+        let BOARD_SIZE   = 8;
+        let MINES_COUNT  = 10;
+
+        // ── Стан гри ────────────────────────────────────────────────
+        let board        = [];
+        let gameOver     = false;
+        let firstClick   = true;
+        let revealedCount = 0;
+        let flagsCount   = 0;
+
+        // ── Таймер ──────────────────────────────────────────────────
+        let timerInterval = null;
+        let timerSeconds  = 0;
+
+        // ── DOM ─────────────────────────────────────────────────────
+        const boardEl       = document.getElementById("board");
+        const minesLeftEl   = document.getElementById("mines-left");
+        const timerEl       = document.getElementById("timer-display");
+        const restartBtn    = document.getElementById("restart-btn");
+        const resultOverlay = document.getElementById("result-overlay");
+        const resultEmoji   = document.getElementById("result-emoji");
+        const resultText    = document.getElementById("result-text");
+        const resultTime    = document.getElementById("result-time");
+
+        const clickSound     = document.getElementById("click-sound");
+        const explosionSound = document.getElementById("explosion-sound");
+
+        const STATUS_WIN  = "${minesweeper_status_win}";
+        const STATUS_LOSE = "${minesweeper_status_lose}";
+
+        // ── Складність: кнопки ──────────────────────────────────────
+        document.querySelectorAll(".diff-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".diff-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                currentDiff = btn.dataset.diff;
+                startGame();
+            });
+        });
+
+        // ── Звук ────────────────────────────────────────────────────
+        function playSound(audioEl) {
+            try {
+                audioEl.pause();
+                audioEl.currentTime = 0;
+                const p = audioEl.play();
+                if (p !== undefined) p.catch(() => {});
+            } catch (e) {}
+        }
+
+        // ── Таймер ──────────────────────────────────────────────────
+        function startTimer() {
+            stopTimer();
+            timerSeconds = 0;
+            timerEl.textContent = "0";
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                timerEl.textContent = timerSeconds;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        // ── Дошка ────────────────────────────────────────────────────
+        function createEmptyBoard() {
+            board = [];
+            for (let r = 0; r < BOARD_SIZE; r++) {
+                const row = [];
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    row.push({ row: r, col: c, mine: false, revealed: false, flagged: false, count: 0 });
+                }
+                board.push(row);
+            }
+        }
+
+        // Ставимо міни, уникаючи клітинки firstRow/firstCol та її сусідів
+        function placeMines(firstRow, firstCol) {
+            const safe = new Set();
+            for (let r = firstRow - 1; r <= firstRow + 1; r++)
+                for (let c = firstCol - 1; c <= firstCol + 1; c++)
+                    if (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE)
+                        safe.add(r * BOARD_SIZE + c);
+
+            let placed = 0;
+            while (placed < MINES_COUNT) {
+                const r = Math.floor(Math.random() * BOARD_SIZE);
+                const c = Math.floor(Math.random() * BOARD_SIZE);
+                if (!board[r][c].mine && !safe.has(r * BOARD_SIZE + c)) {
+                    board[r][c].mine = true;
+                    placed++;
+                }
+            }
+        }
+
+        function calculateNumbers() {
+            for (let r = 0; r < BOARD_SIZE; r++)
+                for (let c = 0; c < BOARD_SIZE; c++)
+                    if (!board[r][c].mine)
+                        board[r][c].count = neighbors(r, c).filter(n => n.mine).length;
+        }
+
+        function neighbors(row, col) {
+            const res = [];
+            for (let r = row - 1; r <= row + 1; r++)
+                for (let c = col - 1; c <= col + 1; c++)
+                    if (!(r === row && c === col) && r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE)
+                        res.push(board[r][c]);
+            return res;
+        }
+
+        // ── Рендер ──────────────────────────────────────────────────
+        function renderBoard() {
+            boardEl.style.gridTemplateColumns = `repeat(${BOARD_SIZE}, var(--cell-size))`;
+            boardEl.innerHTML = "";
+
+            for (let r = 0; r < BOARD_SIZE; r++) {
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    const cell  = board[r][c];
+                    const el    = document.createElement("button");
+                    el.type     = "button";
+                    el.className = "cell";
+
+                    if (cell.revealed) {
+                        el.classList.add("revealed");
+                        if (cell.mine) {
+                            el.classList.add("mine");
+                            if (cell.boom) el.classList.add("boom");
+                            el.textContent = "💣";
+                        } else if (cell.count > 0) {
+                            el.textContent = cell.count;
+                            el.dataset.number = cell.count;
+                        }
+                    } else if (cell.flagged) {
+                        el.classList.add("flagged");
+                        el.textContent = "🚩";
+                    }
+
+                    el.addEventListener("click",       () => onLeft(r, c));
+                    el.addEventListener("contextmenu", e => { e.preventDefault(); onRight(r, c); });
+                    boardEl.appendChild(el);
+                }
+            }
+
+            minesLeftEl.textContent = MINES_COUNT - flagsCount;
+        }
+
+        // ── Відкриття ────────────────────────────────────────────────
+        function revealCell(row, col) {
+            const cell = board[row][col];
+            if (cell.revealed || cell.flagged) return;
+            cell.revealed = true;
+            revealedCount++;
+            if (cell.count === 0 && !cell.mine)
+                neighbors(row, col).forEach(n => revealCell(n.row, n.col));
+        }
+
+        function revealAllMines(boomRow, boomCol) {
+            // Спочатку показуємо міну що вибухнула
+            board[boomRow][boomCol].boom = true;
+            // Решта мін з затримкою хвилею
+            const mines = [];
+            for (let r = 0; r < BOARD_SIZE; r++)
+                for (let c = 0; c < BOARD_SIZE; c++)
+                    if (board[r][c].mine && !(r === boomRow && c === boomCol))
+                        mines.push(board[r][c]);
+
+            mines.sort((a, b) => {
+                const da = Math.hypot(a.row - boomRow, a.col - boomCol);
+                const db = Math.hypot(b.row - boomRow, b.col - boomCol);
+                return da - db;
+            });
+
+            board[boomRow][boomCol].revealed = true;
+            renderBoard();
+
+            mines.forEach((cell, i) => {
+                setTimeout(() => {
+                    cell.revealed = true;
+                    renderBoard();
+                }, 80 + i * 60);
+            });
+
+            const totalDelay = 80 + mines.length * 60 + 400;
+            setTimeout(() => showResult(false), totalDelay);
+        }
+
+        // ── Перемога / програш ──────────────────────────────────────
+        function checkWin() {
+            if (revealedCount >= BOARD_SIZE * BOARD_SIZE - MINES_COUNT) {
+                stopTimer();
+                gameOver = true;
+                // Прапорці на всі міни
+                for (let r = 0; r < BOARD_SIZE; r++)
+                    for (let c = 0; c < BOARD_SIZE; c++)
+                        if (board[r][c].mine) board[r][c].flagged = true;
+                renderBoard();
+                showResult(true);
+            }
+        }
+
+        function showResult(win) {
+            resultEmoji.textContent = win ? "🎉" : "💥";
+            resultText.textContent  = win ? STATUS_WIN : STATUS_LOSE;
+            resultTime.textContent  = win ? `⏱ ${timerSeconds} сек` : "";
+            resultOverlay.classList.remove("hidden");
+        }
+
+        // ── Кліки ────────────────────────────────────────────────────
+        function onLeft(row, col) {
+            if (gameOver) return;
+            const cell = board[row][col];
+            if (cell.revealed || cell.flagged) return;
+
+            // Перший клік — ставимо міни безпечно
+            if (firstClick) {
+                firstClick = false;
+                placeMines(row, col);
+                calculateNumbers();
+                startTimer();
+            }
+
+            if (cell.mine) {
+                gameOver = true;
+                stopTimer();
+                playSound(explosionSound);
+                revealAllMines(row, col);
+                return;
+            }
+
+            playSound(clickSound);
+            revealCell(row, col);
+            renderBoard();
+            checkWin();
+        }
+
+        function onRight(row, col) {
+            if (gameOver) return;
+            const cell = board[row][col];
+            if (cell.revealed) return;
+
+            if (cell.flagged) {
+                cell.flagged = false;
+                flagsCount--;
+            } else {
+                if (flagsCount >= MINES_COUNT) return;
+                cell.flagged = true;
+                flagsCount++;
+            }
+            renderBoard();
+        }
+
+        // ── Старт ────────────────────────────────────────────────────
+        function startGame() {
+            stopTimer();
+            const diff   = DIFFICULTIES[currentDiff];
+            BOARD_SIZE   = diff.size;
+            MINES_COUNT  = diff.mines;
+            gameOver     = false;
+            firstClick   = true;
+            revealedCount = 0;
+            flagsCount   = 0;
+            timerSeconds = 0;
+            timerEl.textContent = "0";
+            resultOverlay.classList.add("hidden");
+            createEmptyBoard();
+            renderBoard();
+        }
+
+        restartBtn.addEventListener("click", startGame);
+        startGame();
+    </script>
+</body>
+</html>
