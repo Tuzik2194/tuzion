@@ -37,6 +37,10 @@
                 <span class="menu-link-icon">🌤️</span>
                 <span>${menu_weather}</span>
             </a>
+            <a href="/dev" class="menu-link">
+                <span class="menu-link-icon">🛠️</span>
+                <span>${menu_dev}</span>
+            </a>
         </nav>
     </aside>
 
@@ -44,6 +48,19 @@
         <div class="clock-widget-label">${clock_label}</div>
         <div id="kyiv-clock" class="clock-widget-time">--:--:--</div>
         <div id="kyiv-date" class="clock-widget-date">--.--.----</div>
+    </div>
+
+    <div class="account-wrap">
+        <button class="account-button" type="button" onclick="toggleAccount()">
+            <span class="account-button-icon">👤</span>
+            <span class="account-button-text">${account_button}</span>
+        </button>
+        <div id="account-dropdown" class="account-dropdown">
+            <div class="account-dropdown-inner">
+                <div class="account-wip-icon">🔧</div>
+                <div class="account-wip-text">В розробці...</div>
+            </div>
+        </div>
     </div>
 
     <main class="page">
@@ -73,6 +90,11 @@
             <div class="footer-text">${footer}</div>
         </section>
     </main>
+
+    <div class="bottom-bar">
+        <a href="/rules" class="rules-link">${rules_link}</a>
+        <span class="copyright">${copyright}</span>
+    </div>
 
     <script src="/script.js"></script>
 </body>

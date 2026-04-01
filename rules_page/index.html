@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${rules_title}</title>
+    <link rel="stylesheet" href="/rules_page/style.css">
+</head>
+<body>
+
+    <button class="menu-button" onclick="window.location.href='/'" type="button">
+        <span class="menu-button-icon">←</span>
+        <span class="menu-button-text">${menu_back}</span>
+    </button>
+
+    <main class="page">
+        <section class="rules-section">
+
+            <div class="rules-badge">Tuzion</div>
+            <h1>${rules_title}</h1>
+            <p class="rules-subtitle">${rules_subtitle}</p>
+
+            <div class="rules-grid">
+
+                <div class="rules-card">
+                    <div class="rules-card-num">01</div>
+                    <div class="rules-card-title">${rules_1_title}</div>
+                    <div class="rules-card-text">${rules_1_text}</div>
+                </div>
+
+                <div class="rules-card">
+                    <div class="rules-card-num">02</div>
+                    <div class="rules-card-title">${rules_2_title}</div>
+                    <div class="rules-card-text">${rules_2_text}</div>
+                </div>
+
+                <div class="rules-card">
+                    <div class="rules-card-num">03</div>
+                    <div class="rules-card-title">${rules_3_title}</div>
+                    <div class="rules-card-text">${rules_3_text}</div>
+                </div>
+
+            </div>
+
+        </section>
+    </main>
+
+    <script src="/script.js"></script>
+</body>
+</html>

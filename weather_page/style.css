@@ -468,3 +468,36 @@ body {
         grid-template-columns: repeat(3, 1fr);
     }
 }
+/* ── Нижня панель ── */
+.bottom-bar {
+    position: fixed;
+    bottom: 18px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.rules-link {
+    color: var(--muted);
+    font-size: 13px;
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    letter-spacing: 0.3px;
+}
+
+.rules-link:hover {
+    opacity: 1;
+    color: var(--accent);
+}
+
+.copyright {
+    color: var(--muted);
+    font-size: 12px;
+    opacity: 0.4;
+}

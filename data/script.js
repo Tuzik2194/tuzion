@@ -1,3 +1,15 @@
+function toggleAccount() {
+    const dropdown = document.getElementById("account-dropdown");
+    dropdown.classList.toggle("open");
+}
+
+document.addEventListener("click", function(e) {
+    const wrap = document.querySelector(".account-wrap");
+    if (wrap && !wrap.contains(e.target)) {
+        document.getElementById("account-dropdown").classList.remove("open");
+    }
+});
+
 function openMenu() {
     document.getElementById("side-menu").classList.add("open");
     document.getElementById("menu-overlay").classList.add("open");

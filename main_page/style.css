@@ -145,6 +145,117 @@ body {
     font-size: 14px;
 }
 
+/* ── Нижня панель ── */
+.bottom-bar {
+    position: fixed;
+    bottom: 18px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.rules-link {
+    color: var(--muted);
+    font-size: 13px;
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    letter-spacing: 0.3px;
+}
+
+.rules-link:hover {
+    opacity: 1;
+    color: var(--accent);
+}
+
+.copyright {
+    color: var(--muted);
+    font-size: 12px;
+    opacity: 0.4;
+}
+
+/* ── Акаунт ── */
+.account-wrap {
+    position: fixed;
+    top: 102px;
+    right: 18px;
+    z-index: 1200;
+    min-width: 130px;
+}
+
+.account-button {
+    border: 1px solid var(--border);
+    background: rgba(10, 18, 33, 0.78);
+    color: white;
+    border-radius: 16px;
+    padding: 10px 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(10px);
+    transition: 0.2s ease;
+    width: 100%;
+    justify-content: center;
+}
+
+.account-button:hover {
+    transform: translateY(-1px);
+    background: rgba(16, 27, 49, 0.95);
+    border-color: rgba(76, 194, 255, 0.25);
+}
+
+.account-button-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.account-button-text {
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.account-dropdown {
+    margin-top: 8px;
+    background: rgba(8, 15, 29, 0.96);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(12px);
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.25s ease, opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.account-dropdown.open {
+    max-height: 200px;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.account-dropdown-inner {
+    padding: 20px 16px;
+    text-align: center;
+}
+
+.account-wip-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.account-wip-text {
+    font-size: 14px;
+    color: var(--muted);
+}
+
 /* ── Кнопка меню ── */
 .menu-button {
     position: fixed;

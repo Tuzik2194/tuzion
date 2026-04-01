@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${dev_title}</title>
+    <link rel="stylesheet" href="/dev_page/style.css">
+</head>
+<body>
+
+    <button class="menu-button" onclick="window.location.href='/'" type="button">
+        <span class="menu-button-icon">←</span>
+        <span class="menu-button-text">${menu_back}</span>
+    </button>
+
+    <main class="page">
+        <section class="dev-card">
+            <div class="dev-badge">Tuzion</div>
+            <div class="dev-icon">🛠️</div>
+            <h1>${dev_title}</h1>
+            <p class="dev-text">${dev_description}</p>
+        </section>
+    </main>
+
+    <script src="/script.js"></script>
+</body>
+</html>

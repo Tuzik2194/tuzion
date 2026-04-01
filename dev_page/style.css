@@ -33,20 +33,20 @@ body {
     padding: 28px;
 }
 
-.games-card {
-    width: min(100%, 760px);
+.dev-card {
+    width: min(100%, 500px);
     text-align: center;
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 28px;
-    padding: 42px 28px;
+    padding: 52px 36px;
     box-shadow: var(--shadow);
     backdrop-filter: blur(12px);
 }
 
-.games-badge {
+.dev-badge {
     display: inline-block;
-    margin-bottom: 18px;
+    margin-bottom: 24px;
     padding: 8px 14px;
     border-radius: 999px;
     background: rgba(76, 194, 255, 0.12);
@@ -55,41 +55,21 @@ body {
     font-weight: bold;
 }
 
-h1 {
-    font-size: 48px;
-    margin-bottom: 14px;
+.dev-icon {
+    font-size: 56px;
+    margin-bottom: 20px;
+    line-height: 1;
 }
 
-.games-text {
+h1 {
+    font-size: 42px;
+    margin-bottom: 16px;
+}
+
+.dev-text {
     color: var(--muted);
     font-size: 20px;
-    margin-bottom: 28px;
-}
-
-.games-grid {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-
-.game-btn {
-    min-width: 220px;
-    padding: 22px 26px;
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-    transition: 0.2s ease;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
-}
-
-.game-btn:hover {
-    transform: translateY(-3px) scale(1.02);
-    background: rgba(76, 194, 255, 0.12);
-    border-color: rgba(76, 194, 255, 0.2);
+    line-height: 1.5;
 }
 
 .menu-button {
@@ -97,7 +77,6 @@ h1 {
     top: 18px;
     left: 18px;
     z-index: 1200;
-    border: none;
     background: rgba(10, 18, 33, 0.78);
     color: white;
     border-radius: 16px;
@@ -128,53 +107,16 @@ h1 {
 }
 
 @media (max-width: 700px) {
-    .games-card {
-        padding: 30px 20px;
+    .dev-card {
+        padding: 36px 22px;
         border-radius: 24px;
     }
 
     h1 {
-        font-size: 38px;
+        font-size: 34px;
     }
 
-    .games-text {
+    .dev-text {
         font-size: 18px;
     }
-
-    .game-btn {
-        width: 100%;
-    }
-}
-/* ── Нижня панель ── */
-.bottom-bar {
-    position: fixed;
-    bottom: 18px;
-    left: 0;
-    right: 0;
-    text-align: center;
-    z-index: 100;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-}
-
-.rules-link {
-    color: var(--muted);
-    font-size: 13px;
-    text-decoration: none;
-    opacity: 0.6;
-    transition: opacity 0.2s ease, color 0.2s ease;
-    letter-spacing: 0.3px;
-}
-
-.rules-link:hover {
-    opacity: 1;
-    color: var(--accent);
-}
-
-.copyright {
-    color: var(--muted);
-    font-size: 12px;
-    opacity: 0.4;
 }
